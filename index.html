@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カメラフェードアウト修正版</title>
+    <title>カメラ拡大とフェードアウト解消版</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
     <style>
@@ -30,15 +30,13 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* 映像を画面全体にフィット */
-            z-index: -1; /* 背景に固定 */
-            display: block; /* 表示し続ける */
-            opacity: 1; /* 不透明に設定 */
+            object-fit: contain; /* 拡大を防ぐ */
+            z-index: -1;
         }
     </style>
 </head>
 <body>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
         <!-- ARマーカー -->
         <a-marker preset="custom" type="pattern" url="markers/pattern-QR_img1.patt">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
@@ -61,7 +59,7 @@
                             .getUserMedia({
                                 video: {
                                     facingMode: { ideal: "environment" }, // 背面カメラを使用
-                                    width: { ideal: 1280 },
+                                    width: { ideal: 1280 }, // 解像度の設定
                                     height: { ideal: 720 }
                                 }
                             })
@@ -70,19 +68,14 @@
                                 videoElement.play(); // 映像を再生
 
                                 // 映像のスタイルを維持
-                                const enforceStyle = () => {
-                                    videoElement.style.position = "fixed";
-                                    videoElement.style.top = "0";
-                                    videoElement.style.left = "0";
-                                    videoElement.style.width = "100vw";
-                                    videoElement.style.height = "100vh";
-                                    videoElement.style.objectFit = "cover";
-                                    videoElement.style.opacity = "1"; // 不透明に設定
-                                    videoElement.style.display = "block"; // 表示を維持
-                                    requestAnimationFrame(enforceStyle);
-                                };
-                                enforceStyle();
-
+                                videoElement.style.position = "fixed";
+                                videoElement.style.top = "0";
+                                videoElement.style.left = "0";
+                                videoElement.style.width = "100vw";
+                                videoElement.style.height = "100vh";
+                                videoElement.style.objectFit = "contain"; // 拡大を防ぐ
+                                videoElement.style.opacity = "1"; // 不透明に設定
+                                videoElement.style.display = "block"; // 表示を維持
                                 console.log("カメラが正常に起動しました");
                             })
                             .catch((err) => {
