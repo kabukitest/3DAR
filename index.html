@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARマーカーとカメラ拡大対応版</title>
+    <title>カメラと3Dモデル表示</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
     <style>
@@ -30,20 +30,20 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* 映像を画面全体にフィット */
+            object-fit: cover;
             z-index: -1;
         }
     </style>
 </head>
 <body>
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
-        <!-- カメラエンティティ -->
-        <a-entity camera></a-entity>
+        <!-- 1つ目の3Dモデル -->
+        <a-entity gltf-model="model1.gltf" position="0 0 -3" scale="0.5 0.5 0.5"></a-entity>
 
-        <!-- マーカーと表示する3Dオブジェクト -->
-        <a-marker preset="hiro">
-            <a-box position="0 0.5 0" material="color: red;"></a-box>
-        </a-marker>
+        <!-- 2つ目の3Dモデル -->
+        <a-entity gltf-model="model2.gltf" position="1 0 -3" scale="0.5 0.5 0.5"></a-entity>
+
+        <!-- カメラエンティティ -->
         <a-entity camera></a-entity>
     </a-scene>
 
@@ -56,20 +56,17 @@
                     const videoElement = arScene.systems["arjs"].sourceElement;
 
                     if (videoElement && videoElement.tagName === "VIDEO") {
-                        // 明示的にカメラの解像度を設定
                         navigator.mediaDevices
                             .getUserMedia({
                                 video: {
-                                    facingMode: { ideal: "environment" }, // 背面カメラを使用
-                                    width: { ideal: 1280 }, // 解像度の設定
+                                    facingMode: { ideal: "environment" },
+                                    width: { ideal: 1280 },
                                     height: { ideal: 720 }
                                 }
                             })
                             .then((stream) => {
-                                videoElement.srcObject = stream; // ストリームを適用
-                                videoElement.play(); // 映像を再生
-
-                                // 映像のスタイルを設定
+                                videoElement.srcObject = stream;
+                                videoElement.play();
                                 videoElement.style.position = "fixed";
                                 videoElement.style.top = "0";
                                 videoElement.style.left = "0";
@@ -85,8 +82,6 @@
                         console.error("AR.jsのビデオ要素が見つかりません。");
                     }
                 });
-            } else {
-                console.error("A-Frameシーンが正しくロードされていません。");
             }
         });
     </script>
