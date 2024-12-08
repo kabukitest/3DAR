@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html lang="ja"> <!-- HTMLドキュメントの言語を日本語に設定 -->
+<html lang="ja">
 <head>
-    <meta charset="utf-8"> <!-- ページの文字エンコーディングをUTF-8に設定 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <!-- モバイルデバイス対応のスケール設定 -->
-    <title>AR Display</title> <!-- ページのタイトルを設定 -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AR Display</title>
 
-    <!-- A-Frameライブラリの読み込み -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <!-- AR.jsライブラリの読み込み -->
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- A-Frame を読み込む -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <!-- AR.js を読み込む -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
 </head>
-<body>
-    <!-- A-Frameのシーンを作成 -->
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
-        <!-- アセット（モデルなど）を定義 -->
-        <a-assets>
-            <!-- モデルを読み込むためのアセット定義 -->
-            <a-asset-item id="atat-model" src="models/ATAT.glb"></a-asset-item> <!-- GLB形式の3Dモデルを指定 -->
-        </a-assets>
 
-        <!-- ARマーカーの定義 -->
-        <a-marker preset="custom" type="pattern" url="markers/pattern-ATAT.patt">
-            <!-- 読み込んだモデルを表示する -->
-            <a-entity gltf-model="#atat-model" position="0 0 0" rotation="0 0 0" scale="0.1 0.1 0.1"></a-entity>
-            <!-- gltf-model="#atat-model": プリロードしたモデルを指定 -->
-            <!-- position="0 0 0": モデルの位置を設定 -->
-            <!-- rotation="0 0 0": モデルの回転角度を設定 -->
-            <!-- scale="0.1 0.1 0.1": モデルのスケールを指定 -->
-        </a-marker>
+<body style="margin: 0; overflow: hidden; background-color: black;">
+  <!-- シーンを追加 -->
+  <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
+    <!-- 3Dモデルのアセットを読み込む -->
+    <a-assets>
+      <a-asset-item id="atat-model" src="models/ATAT.glb"></a-asset-item>
+    </a-assets>
 
-        <!-- カメラエンティティ -->
-        <a-entity camera></a-entity>
-    </a-scene>
+    <!-- マーカーを追加 -->
+    <a-marker type="pattern" url="markers/pattern-ATAT.patt">
+      <!-- 3Dモデルをマーカーに関連付け -->
+      <a-entity gltf-model="#atat-model" position="0 0 0" rotation="0 0 0" scale="0.1 0.1 0.1"></a-entity>
+    </a-marker>
+
+    <!-- カメラを追加 -->
+    <a-entity camera></a-entity>
+  </a-scene>
 </body>
 </html>
