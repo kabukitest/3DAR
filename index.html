@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カメラテスト</title>
+    <title>3DモデルのAR表示</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/STLLoader.js"></script>
     <style>
         body, html {
             margin: 0;
@@ -16,20 +18,95 @@
             background: black;
         }
 
+        a-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: contain;
+            object-fit: cover; /* 映像を画面全体にフィット */
             z-index: -1;
         }
     </style>
 </head>
 <body>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
+        <!-- ARマーカーを定義 -->
+        <a-marker preset="custom" type="pattern" url="markers/pattern-QR_img1.patt">
+            <!-- STLモデルを表示するエンティティ -->
+            <a-entity id="stl-model" position="0 0 0" scale="0.05 0.05 0.05"></a-entity>
+        </a-marker>
+
         <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const arScene = document.querySelector("a-scene");
+
+            if (arScene) {
+                arScene.addEventListener("loaded", () => {
+                    const videoElement = arScene.systems["arjs"].sourceElement;
+
+                    if (videoElement && videoElement.tagName === "VIDEO") {
+                        // カメラ映像を取得して設定
+                        navigator.mediaDevices
+                            .getUserMedia({
+                                video: {
+                                    facingMode: { ideal: "environment" }, // 背面カメラを使用
+                                    width: { ideal: 1280 }, // 解像度の設定
+                                    height: { ideal: 720 }
+                                }
+                            })
+                            .then((stream) => {
+                                videoElement.srcObject = stream; // ストリームをビデオ要素に適用
+                                videoElement.play(); // 映像を再生
+
+                                // 映像のスタイルを適用
+                                videoElement.style.position = "fixed";
+                                videoElement.style.top = "0";
+                                videoElement.style.left = "0";
+                                videoElement.style.width = "100vw";
+                                videoElement.style.height = "100vh";
+                                videoElement.style.objectFit = "cover";
+                                console.log("カメラが正常に起動しました");
+                            })
+                            .catch((err) => {
+                                console.error("カメラの初期化に失敗しました:", err);
+                            });
+                    } else {
+                        console.error("AR.jsのビデオ要素が見つかりません。");
+                    }
+                });
+            }
+
+            // STLモデルを読み込む処理
+            const stlModelEntity = document.querySelector("#stl-model");
+            const loader = new THREE.STLLoader();
+
+            loader.load('models/untitled.stl', (geometry) => {
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x0077ff, // モデルの色を設定
+                    metalness: 0.5, // 金属感を設定
+                    roughness: 0.5 // 表面の粗さを設定
+                });
+                const mesh = new THREE.Mesh(geometry, material); // ジオメトリとマテリアルを使ってメッシュを作成
+                mesh.rotation.set(-Math.PI / 2, 0, 0); // モデルの向きを調整
+                mesh.scale.set(0.05, 0.05, 0.05); // モデルのスケールを調整
+                stlModelEntity.object3D.add(mesh); // STLモデルをエンティティに追加
+                console.log("STLモデルをロードしました！");
+            }, undefined, (error) => {
+                console.error("STLモデルのロード中にエラーが発生しました:", error);
+            });
+        });
+    </script>
 </body>
 </html>
