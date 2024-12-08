@@ -3,13 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カメラテスト</title>
+    <title>カメラ拡大問題解消版</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+
+        a-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain; /* 拡大を防ぐ */
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
-    <a-scene embedded arjs="sourceType: webcam;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <!-- ARマーカー -->
+        <a-marker preset="custom" type="pattern" url="markers/pattern-QR_img1.patt">
+            <a-box position="0 0.5 0" material="color: red;"></a-box>
+        </a-marker>
+
         <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const arScene = document.querySelector("a-scene");
+
+            if (arScene) {
+                arScene.addEventListener("loaded", () => {
+                    const videoElement = arScene.systems["arjs"].sourceElement;
+
+                    if (videoElement && videoElement.tagName === "VIDEO") {
+                        // 解像度設定を削除してデフォルトに
+                        navigator.mediaDevices
+                            .getUserMedia({
+                                video: { facingMode: { ideal: "environment" } }
+                            })
+                            .then((stream) => {
+                                videoElement.srcObject = stream; // ストリームを適用
+                                videoElement.play(); // 映像を再生
+
+                                // 映像のスタイルを適切に設定
+                                videoElement.style.position = "fixed";
+                                videoElement.style.top = "0";
+                                videoElement.style.left = "0";
+                                videoElement.style.width = "100vw";
+                                videoElement.style.height = "100vh";
+                                videoElement.style.objectFit = "contain"; // 拡大を防ぐ
+                                console.log("カメラが正常に起動しました");
+                            })
+                            .catch((err) => {
+                                console.error("カメラの初期化に失敗しました:", err);
+                            });
+                    } else {
+                        console.error("AR.jsのビデオ要素が見つかりません。");
+                    }
+                });
+            } else {
+                console.error("A-Frameシーンが正しくロードされていません。");
+            }
+        });
+    </script>
 </body>
 </html>
