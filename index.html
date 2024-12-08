@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カメラフェードアウト問題解消版</title>
+    <title>カメラフェードアウト修正版</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
     <style>
@@ -30,7 +30,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover;
+            object-fit: cover; /* 映像を画面全体にフィット */
             z-index: -1; /* 背景に固定 */
             display: block; /* 表示し続ける */
             opacity: 1; /* 不透明に設定 */
@@ -69,14 +69,20 @@
                                 videoElement.srcObject = stream; // ストリームを適用
                                 videoElement.play(); // 映像を再生
 
-                                // 映像のスタイルを設定
-                                videoElement.style.position = "fixed";
-                                videoElement.style.top = "0";
-                                videoElement.style.left = "0";
-                                videoElement.style.width = "100vw";
-                                videoElement.style.height = "100vh";
-                                videoElement.style.objectFit = "cover";
-                                videoElement.style.opacity = "1"; // 不透明に設定
+                                // 映像のスタイルを維持
+                                const enforceStyle = () => {
+                                    videoElement.style.position = "fixed";
+                                    videoElement.style.top = "0";
+                                    videoElement.style.left = "0";
+                                    videoElement.style.width = "100vw";
+                                    videoElement.style.height = "100vh";
+                                    videoElement.style.objectFit = "cover";
+                                    videoElement.style.opacity = "1"; // 不透明に設定
+                                    videoElement.style.display = "block"; // 表示を維持
+                                    requestAnimationFrame(enforceStyle);
+                                };
+                                enforceStyle();
+
                                 console.log("カメラが正常に起動しました");
                             })
                             .catch((err) => {
