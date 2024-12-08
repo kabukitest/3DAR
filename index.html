@@ -3,15 +3,41 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>モデル直接表示テスト</title>
+    <title>ARカメラテスト</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+        a-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
-    <a-scene>
-        <a-assets>
-            <a-asset-item id="atat-model" src="models/ATAT.glb"></a-asset-item>
-        </a-assets>
-        <a-entity gltf-model="#atat-model" position="0 1 -3" rotation="0 45 0" scale="0.3 0.3 0.3"></a-entity>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;" vr-mode-ui="enabled: false;">
+        <a-marker preset="custom" type="pattern" url="markers/pattern-ATAT.patt">
+            <a-entity gltf-model="models/ATAT.glb" position="0 1 0" scale="0.3 0.3 0.3"></a-entity>
+        </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
 </body>
