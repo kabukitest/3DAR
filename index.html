@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マーカーなしで3DモデルをAR表示</title>
+    <title>ARで3Dモデルを表示</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/FBXLoader.js"></script>
     <style>
         body, html { margin: 0; padding: 0; overflow: hidden; }
         a-scene { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
@@ -15,32 +13,14 @@
 </head>
 <body>
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- FBXモデルの位置 -->
-        <a-entity id="cat-model" position="0 0 0" scale="0.05 0.05 0.05"></a-entity>
+        <!-- 1つ目のモデル -->
+        <a-entity gltf-model="path/to/untitled1.gltf" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+        
+        <!-- 2つ目のモデル -->
+        <a-entity gltf-model="path/to/untitled2.gltf" position="1 0 0" scale="0.5 0.5 0.5"></a-entity>
         
         <!-- カメラ -->
         <a-entity camera></a-entity>
     </a-scene>
-
-    <script>
-        // FBXモデルをロードする関数
-        const loadFBXModel = () => {
-            const loader = new THREE.FBXLoader();
-            const catModelEntity = document.querySelector("#cat-model");
-
-            loader.load('./cat.fbx', (fbx) => {
-                const scene = catModelEntity.object3D;
-                scene.add(fbx);
-                console.log("FBXモデルをロードしました！");
-            }, undefined, (error) => {
-                console.error("FBXモデルのロード中にエラーが発生しました：", error);
-            });
-        };
-
-        // ページ読み込み時にモデルをロード
-        window.onload = () => {
-            loadFBXModel();
-        };
-    </script>
 </body>
 </html>
