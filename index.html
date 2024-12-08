@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLモデルのAR表示</title>
+    <title>STLモデルとカメラ拡大対応版</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -25,10 +25,20 @@
             width: 100%;
             height: 100%;
         }
+
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* 映像を画面全体にフィット */
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
-    <a-scene embedded arjs="sourceType: webcam;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
         <!-- マーカー -->
         <a-marker preset="custom" type="pattern" url="markers/pattern-QR_img1.patt">
             <!-- STLモデルを配置するエンティティ -->
@@ -39,11 +49,47 @@
     </a-scene>
 
     <script>
-        // STLモデルを読み込む
         document.addEventListener("DOMContentLoaded", () => {
-            const stlModelEntity = document.querySelector("#stl-model");
+            const arScene = document.querySelector("a-scene");
 
-            // Three.jsのSTLLoaderを使用してモデルをロード
+            if (arScene) {
+                arScene.addEventListener("loaded", () => {
+                    const videoElement = arScene.systems["arjs"].sourceElement;
+
+                    if (videoElement && videoElement.tagName === "VIDEO") {
+                        // 明示的にカメラの解像度を設定
+                        navigator.mediaDevices
+                            .getUserMedia({
+                                video: {
+                                    facingMode: { ideal: "environment" }, // 背面カメラを使用
+                                    width: { ideal: 1280 }, // 解像度の設定
+                                    height: { ideal: 720 }
+                                }
+                            })
+                            .then((stream) => {
+                                videoElement.srcObject = stream; // ストリームを適用
+                                videoElement.play(); // 映像を再生
+
+                                // 映像のスタイルを設定
+                                videoElement.style.position = "fixed";
+                                videoElement.style.top = "0";
+                                videoElement.style.left = "0";
+                                videoElement.style.width = "100vw";
+                                videoElement.style.height = "100vh";
+                                videoElement.style.objectFit = "cover";
+                                console.log("カメラが正常に起動しました");
+                            })
+                            .catch((err) => {
+                                console.error("カメラの初期化に失敗しました:", err);
+                            });
+                    } else {
+                        console.error("AR.jsのビデオ要素が見つかりません。");
+                    }
+                });
+            }
+
+            // STLモデルを読み込む
+            const stlModelEntity = document.querySelector("#stl-model");
             const loader = new THREE.STLLoader();
             loader.load('models/untitled.stl', (geometry) => {
                 const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, metalness: 0.5, roughness: 0.5 });
