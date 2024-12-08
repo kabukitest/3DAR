@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カメラ拡大とフェードアウト解消版</title>
+    <title>3DモデルのAR表示</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/STLLoader.js"></script>
     <style>
         body, html {
             margin: 0;
@@ -37,9 +39,10 @@
 </head>
 <body>
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
-        <!-- ARマーカー -->
+        <!-- マーカー -->
         <a-marker preset="custom" type="pattern" url="markers/pattern-QR_img1.patt">
-            <a-box position="0 0.5 0" material="color: red;"></a-box>
+            <!-- 3Dモデルを表示するエンティティ -->
+            <a-entity id="stl-model" position="0 0 0" scale="0.05 0.05 0.05"></a-entity>
         </a-marker>
 
         <a-entity camera></a-entity>
@@ -85,9 +88,21 @@
                         console.error("AR.jsのビデオ要素が見つかりません。");
                     }
                 });
-            } else {
-                console.error("A-Frameシーンが正しくロードされていません。");
             }
+
+            // STLモデルを読み込む
+            const stlModelEntity = document.querySelector("#stl-model");
+            const loader = new THREE.STLLoader();
+            loader.load('models/untitled.stl', (geometry) => {
+                const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, metalness: 0.5, roughness: 0.5 });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.rotation.set(-Math.PI / 2, 0, 0); // 必要に応じて回転を調整
+                mesh.scale.set(0.05, 0.05, 0.05); // 必要に応じてスケールを調整
+                stlModelEntity.object3D.add(mesh);
+                console.log("STLモデルをロードしました！");
+            }, undefined, (error) => {
+                console.error("STLモデルのロード中にエラーが発生しました:", error);
+            });
         });
     </script>
 </body>
