@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>AR Display</title>
+  <title>AR Display with Animations</title>
 
   <!-- A-Frameライブラリ -->
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
@@ -17,34 +17,39 @@
       <a-asset-item id="atat-model" src="models/ATAT.glb"></a-asset-item> <!-- ATATモデル -->
       <a-asset-item id="guiter-model" src="models/guiter.glb"></a-asset-item> <!-- Guiterモデル -->
       <a-asset-item id="jet-model" src="models/jet.glb"></a-asset-item> <!-- Jetモデル -->
-      <a-asset-item id="speaker-model" src="models/speaker.glb"></a-asset-item> <!-- Jetモデル -->
+      <a-asset-item id="speaker-model" src="models/speaker.glb"></a-asset-item> <!-- Speakerモデル -->
     </a-assets>
 
     <!-- マーカーと対応するモデル -->
     <a-marker type="pattern" url="markers/pattern-ATAT.patt">
-      <!-- ATATモデル -->
+      <!-- ATATモデル (色の変更とモデル軸の回転) -->
       <a-entity gltf-model="#atat-model" position="0 0 0" rotation="0 0 0" scale="1.0 1.0 1.0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
+                animation="property: material.color; to: #FF0000; loop: true; dur: 2000; dir: alternate"
+                animation__rotate="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
     </a-marker>
 
     <a-marker type="pattern" url="markers/pattern-guiter.patt">
-      <!-- Guiterモデル -->
+      <!-- Guiterモデル (色の変更と上下運動) -->
       <a-entity gltf-model="#guiter-model" position="0 0 0" rotation="0 0 0" scale="1.0 1.0 1.0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
+                animation="property: material.color; to: #00FF00; loop: true; dur: 2000; dir: alternate"
+                animation__move="property: position; to: 0 1 0; loop: true; dur: 3000; dir: alternate"></a-entity>
     </a-marker>
 
     <a-marker type="pattern" url="markers/pattern-jet.patt">
-      <!-- Jetモデル -->
+      <!-- Jetモデル (色の変更、上下運動、モデル軸の回転) -->
       <a-entity gltf-model="#jet-model" position="0 0 0" rotation="0 0 0" scale="1.0 1.0 1.0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
+                animation="property: material.color; to: #0000FF; loop: true; dur: 2000; dir: alternate"
+                animation__move="property: position; to: 0 1 0; loop: true; dur: 3000; dir: alternate"
+                animation__rotate="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
     </a-marker>
 
     <a-marker type="pattern" url="markers/pattern-speaker.patt">
-      <!-- speakerモデル -->
+      <!-- Speakerモデル (色の変更と上下運動) -->
       <a-entity gltf-model="#speaker-model" position="0 0 0" rotation="0 0 0" scale="1.0 1.0 1.0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-entity>
+                animation="property: material.color; to: #FFFF00; loop: true; dur: 2000; dir: alternate"
+                animation__move="property: position; to: 0 1 0; loop: true; dur: 3000; dir: alternate"></a-entity>
     </a-marker>
-    
+
     <!-- カメラ -->
     <a-entity camera></a-entity>
   </a-scene>
