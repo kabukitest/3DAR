@@ -48,30 +48,31 @@
   <script>
     // マーカーとモデルの対応を保持する設定
     const markers = [
-      { markerId: 'atat-marker', modelId: 'atat-model', initialScale: '1.0 1.0 1.0', farPosition: '0 5 -50' },
-      { markerId: 'guiter-marker', modelId: 'guiter-model', initialScale: '1.0 1.0 1.0', farPosition: '5 5 -50' },
-      { markerId: 'jet-marker', modelId: 'jet-model', initialScale: '1.0 1.0 1.0', farPosition: '-5 5 -50' },
-      { markerId: 'speaker-marker', modelId: 'speaker-model', initialScale: '1.0 1.0 1.0', farPosition: '0 -5 -50' }
+      { markerId: 'atat-marker', modelId: 'atat-model' },
+      { markerId: 'guiter-marker', modelId: 'guiter-model' },
+      { markerId: 'jet-marker', modelId: 'jet-model' },
+      { markerId: 'speaker-marker', modelId: 'speaker-model' }
     ];
 
-    markers.forEach(({ markerId, modelId, farPosition }) => {
+    markers.forEach(({ markerId, modelId }) => {
       const marker = document.getElementById(markerId);
       const model = document.getElementById(modelId);
 
       // マーカーが見つかったとき
       marker.addEventListener('markerFound', () => {
         console.log(`${markerId} Found`);
-        model.setAttribute('visible', true);
-        model.setAttribute('position', '0 0 0'); // 元の位置に戻す
-        model.setAttribute('scale', '1.0 1.0 1.0');
+        model.setAttribute('visible', true); // モデルを表示
       });
 
       // マーカーが見失われたとき
       marker.addEventListener('markerLost', () => {
         console.log(`${markerId} Lost`);
+        const position = marker.object3D.position.clone(); // 現在の位置を取得
+        const rotation = marker.object3D.rotation.clone(); // 現在の回転を取得
+
+        model.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+        model.setAttribute('rotation', `${rotation.x} ${rotation.y} ${rotation.z}`);
         model.setAttribute('visible', true); // 表示を維持
-        model.setAttribute('position', farPosition); // 遠くに配置
-        model.setAttribute('scale', '10.0 10.0 10.0'); // 巨大化
       });
     });
   </script>
