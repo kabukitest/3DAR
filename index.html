@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>AR Display with Persistent Models</title>
+  <title>AR Persistent Model</title>
 
   <!-- A-Frameライブラリ -->
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
@@ -58,21 +58,25 @@
       const marker = document.getElementById(markerId);
       const model = document.getElementById(modelId);
 
+      // 初期状態を非表示にしない
+      model.setAttribute('visible', true);
+
       // マーカーが見つかったとき
       marker.addEventListener('markerFound', () => {
         console.log(`${markerId} Found`);
         model.setAttribute('visible', true); // モデルを表示
+        model.setAttribute('position', '0 0 0'); // マーカー上に戻す
       });
 
       // マーカーが見失われたとき
       marker.addEventListener('markerLost', () => {
         console.log(`${markerId} Lost`);
-        const position = marker.object3D.position.clone(); // 現在の位置を取得
-        const rotation = marker.object3D.rotation.clone(); // 現在の回転を取得
+        const position = marker.object3D.position.clone(); // 現在の位置を保持
+        const rotation = marker.object3D.rotation.clone(); // 現在の回転を保持
 
         model.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-        model.setAttribute('rotation', `${rotation.x} ${rotation.y} ${rotation.z}`);
-        model.setAttribute('visible', true); // 表示を維持
+        model.setAttribute('rotation', `${THREE.MathUtils.radToDeg(rotation.x)} ${THREE.MathUtils.radToDeg(rotation.y)} ${THREE.MathUtils.radToDeg(rotation.z)}`);
+        model.setAttribute('visible', true); // モデルを表示し続ける
       });
     });
   </script>
